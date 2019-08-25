@@ -6,8 +6,9 @@ var TectonicPlatesURL = "https://raw.githubusercontent.com/fraxen/tectonicplates
 
 //=============================REQUEST DATA
 // Perform a GET request to the Earthquake query URL
+// Once response is received, forward the data.features object to the createFeatures function
 d3.json(earthquakeURL, function(data) {
-    createFeatures(data.features); // Once response is received, forward the data.features object to the createFeatures function
+    createFeatures(data.features); 
 });
 
 // Create GeoJSON layer containing the features array on the earthquakeData object
@@ -24,7 +25,7 @@ function createFeatures(earthquakeData) {
           fillColor: getColor(feature.properties.mag),
           color: "#000",
           weight: .5,
-          fillOpacity: .5,
+          fillOpacity: .6,
           stroke: true
       })
     }
@@ -62,7 +63,7 @@ function createMap(earthquakes) {
   // Create our map, giving it the streetmap and earthquakes layers to display on load
   var myMap = L.map("map", {
     center: [31.7, -7.09],
-    zoom: 2.5,
+    zoom: 2.0,
     layers: [lightMap, earthquakes, tectonicPlates]
   });
 
@@ -88,13 +89,15 @@ function createMap(earthquakes) {
   var legend = L.control({position: 'bottomright'});
   legend.onAdd = function (myMap) {
     var div = L.DomUtil.create('div', 'info legend'),
-              grades = [0, 1, 2, 3, 4, 5],
+              grades = [0, 1, 2, 3, 4, 5, 6, 7],
               labels = [];
 
   // loop through our density intervals and generate a label with a colored square for each interval
+    div.innerHTML += "Magnitude<br><hr>"
+
     for (var i = 0; i < grades.length; i++) {
         div.innerHTML +=
-            '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+            '<i style="background:' + getColor(grades[i] + 1) + '">&nbsp;&nbsp;&nbsp;&nbsp;</i> ' +
             grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
     }
     return div;
@@ -103,24 +106,17 @@ function createMap(earthquakes) {
 }
 
 function getColor(d) {
-  return d > 5 ? '#0000ff' :
+  return d > 7 ? '#000000' :
+  d > 6  ? '#0000ff' :
+  d > 5  ? '#cc00cc' :
   d > 4  ? '#cc0000' :
   d > 3  ? '#ff6600' :
-  d > 2  ? '#ffff00' :
-  d > 1   ? '#996633' :
+  d > 2  ? '#996633' :
+  d > 1   ? '#ffff00' :
             '#00cc00';
 }
-/*
-function getColor(d) {
-    return d > 5 ? '#F30' :
-    d > 4  ? '#F60' :
-    d > 3  ? '#F90' :
-    d > 2  ? '#FC0' :
-    d > 1   ? '#FF0' :
-              '#9F3';
-  }
-*/  
+
 function getRadius(value){
-  return value*40000
+  return value*35000
 }
 
